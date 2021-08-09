@@ -24,8 +24,8 @@ class crawl_mon:
         # print("df : ",df.shape)
         df.sub_code = df.sub_code.astype(str)
         mbti_df = pd.read_csv("../MBTI list.csv")
-        columns_list = ['region', 'B_name', 'pay', 'pay_type', 'city', 'county', 'working_time', 'url',
-                        'working_period', 'day', 'sub_code', 'enrol_date']
+        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code',
+                     'star', 'enrol_date']
 
         self.ISTJ = pd.DataFrame(columns=columns_list)
         self.ISFJ = pd.DataFrame(columns=columns_list)
@@ -87,27 +87,44 @@ class crawl_mon:
 
 
 if __name__ == "__main__":
-    start = time.time()
-    crawl = multy_scrap.MultyScrap()
-    # crawl = scrap.Scrap()
-
-    if crawl == False:
-        print("[Error] 코드 에러")
-        exit()
-    day = datetime.today().strftime("%Y-%m-%d")
-    crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
-    end = time.time() - start
-    print(">>> Scrap time : ", end)
-
-
-    # mon = crawl_mon()
-    # mon.divide_mbti(crawl.df)
+    # start = time.time()
+    # crawl = multy_scrap.MultyScrap()
+    # # crawl = scrap.Scrap()
     #
+    # if crawl == False:
+    #     print("[Error] 코드 에러")
+    #     exit()
+    # day = datetime.today().strftime("%Y-%m-%d")
+    # crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
+    # end = time.time() - start
+    # print(">>> Scrap time : ", end)-
+    
+    # mon = crawl_mon()
+    # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
+    # # mon.divide_mbti(crawl.df)
+    
+    
     # db = db.DB()
     # db.create_table()
     # db.create_log_table()
-    #
+    
     # db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
     #                 mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)
-    #
+    
     # db.insert_total_data(crawl.df)
+
+
+    start = time.time()
+    day = datetime.today().strftime("%Y-%m-%d")
+    end = time.time() - start
+
+    # mon = crawl_mon()
+    # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
+    # # mon.divide_mbti(crawl.df)
+
+    # db = db.DB()
+    # db.create_table()
+    # db.create_log_table()
+
+    # db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
+    #                 mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)

@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 import os, time, re, random, main
 import pandas as pd
+import ctypes
 
 class Scrap:
     def __init__(self):
@@ -20,11 +21,14 @@ class Scrap:
         self.df = self.scrap(self.job_code)
         print(">>> 스크랩 완료")
 
+    def msgBox(self, title, text, style=0):
+        return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+
     # 데이터 추출 및 데이터프레임 변환
     def scrap(self, task_list):
         day = datetime.today().strftime("%Y-%m-%d")
         result_df = pd.DataFrame(
-            columns=['city', 'county', 'company', 'subtitle', 'url', 'gender', 'age', 'pay_type', 'pay', 'sub_code',
+            columns=['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code',
                      'enrol_date']
         )
 
@@ -39,9 +43,9 @@ class Scrap:
         pAd = re.compile(warnAdult)
 
         # 상위 카테고리
-        for title, title_code in tqdm(dict(task_list).items(), desc='전체'):
+        for title, title_code in tqdm(dict(task_list).items()):
             # 하위 카테고리
-            for sub_title, sub_title_code in tqdm(title_code.items(), desc='하위코드', mininterval=0.05):
+            for sub_title, sub_title_code in title_code.items():
 
                 # 총 게시물 수를 통한 전체 페이지 갯수 확인
                 url = self.crawl_mon.make_url(sub_title_code, page=1)
@@ -53,12 +57,14 @@ class Scrap:
                 if pSec.search(bs.text):
                     print(">>> [Error] 보안문자가 발생하였습니다")
                     print(">>> url : ", url)
-                    return False
+                    self.msgBox("Error", "[Error] ",sub_title,"에서 보안문자가 발생하였습니다", 0)
+                    return result_df
+
                 # 성인인증
-                if pAd.search(bs):
+                if pAd.search(str(bs)):
                     print(">>> [Error] {} 성인인증 오류 발생".format(sub_title))
                     continue
-                
+
                 # 초기화
                 totalCount = bs.find("div", "pageSubTit").find("em").text
 
@@ -84,8 +90,9 @@ class Scrap:
                     if pSec.search(bs.text):
                         print(">>> [Error] 보안문자가 발생하였습니다")
                         print(">>> url : ", url)
-                        return False
-                    if pAd.search(bs):
+                        self.msgBox("Error", "[Error] ",sub_title,"에서 보안문자가 발생하였습니다", 0)
+                        return result_df
+                    if pAd.search(str(bs)):
                         print(">>> [Error] {} 성인인증 오류 발생".format(sub_title))
                         break
 
@@ -97,8 +104,9 @@ class Scrap:
                         # 'city', 'county'
                         try:
                             area = \
-                            tr.find(name="td", attrs="area").find_all(name="div")[0].text.split("스크랩\n")[1].split('\n')[
-                                0]
+                                tr.find(name="td", attrs="area").find_all(name="div")[0].text.split("스크랩\n")[1].split(
+                                    '\n')[
+                                    0]
 
                             city = area.split(" ")[0]
 
@@ -113,18 +121,19 @@ class Scrap:
                         except:
                             company = ""
 
-                        # subtitle.
+                        # pay.
                         try:
-                            subtitle = tr.find(name="td", attrs="subject").find_all(name="p", attrs={"cTit"})[0].text
+                            temp_pay = tr.find(name="td", attrs={"pay"}).find_all("p")[1].text
+                            r_pay = re.findall("[0-9]", temp_pay)
+                            pay = int(''.join(r_pay))
                         except:
-                            subtitle = ""
+                            pay = ""
 
-                        # url
+                        # pay_type.
                         try:
-                            url = tr.find("a").get("href")
-                            url = parsed.scheme + "://" + parsed.netloc + url
+                            pay_type = tr.find(name="td", attrs={"pay"}).find("img").get("alt")
                         except:
-                            url = ""
+                            pay_type = ""
 
                         # gender.
                         try:
@@ -138,24 +147,23 @@ class Scrap:
                         except:
                             age = "무관"
 
-                        # pay_type.
+                        # url
                         try:
-                            pay_type = tr.find(name="td", attrs={"pay"}).find("img").get("alt")
+                            url = tr.find("a").get("href")
+                            url = parsed.scheme + "://" + parsed.netloc + url
                         except:
-                            pay_type = ""
+                            url = ""
 
-                        # pay.
+                        # subtitle.
                         try:
-                            temp_pay = tr.find(name="td", attrs={"pay"}).find_all("p")[1].text
-                            r_pay = re.findall("[0-9]", temp_pay)
-                            pay = int(''.join(r_pay))
+                            subtitle = tr.find(name="td", attrs="subject").find_all(name="p", attrs={"cTit"})[0].text
                         except:
-                            pay = ""
+                            subtitle = ""
 
                         result_list.append(
                             [city, county, company, subtitle, url, gender, age, pay_type, pay, sub_title_code, day])
         result_df = pd.DataFrame(result_list,
-                                 columns=['city', 'county', 'company', 'subtitle', 'url', 'gender', 'age', 'pay_type',
-                                          'pay', 'sub_code', 'enrol_date'])
+                                 columns=['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url',
+                                          'subtitle', 'sub_code', 'enrol_date'])
         result_df = result_df.dropna(axis=0)
         return result_df
