@@ -87,17 +87,17 @@ class crawl_mon:
 
 
 if __name__ == "__main__":
-    # start = time.time()
-    # crawl = multy_scrap.MultyScrap()
-    # # crawl = scrap.Scrap()
-    #
-    # if crawl == False:
-    #     print("[Error] 코드 에러")
-    #     exit()
-    # day = datetime.today().strftime("%Y-%m-%d")
-    # crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
-    # end = time.time() - start
-    # print(">>> Scrap time : ", end)-
+    start = time.time()
+    crawl = multy_scrap.MultyScrap()
+    # crawl = scrap.Scrap()
+
+    if crawl == False:
+        print("[Error] 코드 에러")
+        exit()
+    day = datetime.today().strftime("%Y-%m-%d")
+    crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
+    end = time.time() - start
+    print(">>> Scrap time : ", end)
     
     # mon = crawl_mon()
     # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
@@ -114,9 +114,9 @@ if __name__ == "__main__":
     # db.insert_total_data(crawl.df)
 
 
-    start = time.time()
-    day = datetime.today().strftime("%Y-%m-%d")
-    end = time.time() - start
+    # start = time.time()
+    # day = datetime.today().strftime("%Y-%m-%d")
+    # end = time.time() - start
 
     # mon = crawl_mon()
     # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
