@@ -57,7 +57,7 @@ class Scrap:
                 if pSec.search(bs.text):
                     print(">>> [Error] 보안문자가 발생하였습니다")
                     print(">>> url : ", url)
-                    self.msgBox("Error", "[Error] ",sub_title,"에서 보안문자가 발생하였습니다", 0)
+                    self.msgBox("Error", "[Error] "+sub_title+"에서 보안문자가 발생하였습니다", 0)
                     return result_df
 
                 # 성인인증
@@ -90,7 +90,7 @@ class Scrap:
                     if pSec.search(bs.text):
                         print(">>> [Error] 보안문자가 발생하였습니다")
                         print(">>> url : ", url)
-                        self.msgBox("Error", "[Error] ",sub_title,"에서 보안문자가 발생하였습니다", 0)
+                        self.msgBox("Error", "[Error] "+sub_title+"에서 보안문자가 발생하였습니다", 0)
                         return result_df
                     if pAd.search(str(bs)):
                         print(">>> [Error] {} 성인인증 오류 발생".format(sub_title))
