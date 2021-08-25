@@ -85,46 +85,81 @@ class crawl_mon:
                 if (mbti == "ENTJ"):
                     self.ENTJ = pd.concat([self.ENTJ, df.loc[df['sub_code'] == key]], sort=False)
 
+    def divide_jobver(self, df):
+        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code',
+                        'star', 'enrol_date']
+
+        self.food = pd.DataFrame(columns=columns_list)
+        self.sale = pd.DataFrame(columns=columns_list)
+        self.cult = pd.DataFrame(columns=columns_list)
+        self.serv = pd.DataFrame(columns=columns_list)
+        self.desk = pd.DataFrame(columns=columns_list)
+        self.rsch = pd.DataFrame(columns=columns_list)
+        self.buil = pd.DataFrame(columns=columns_list)
+        self.comp = pd.DataFrame(columns=columns_list)
+        self.edct = pd.DataFrame(columns=columns_list)
+        self.desg = pd.DataFrame(columns=columns_list)
+        self.medi = pd.DataFrame(columns=columns_list)
+        self.deli = pd.DataFrame(columns=columns_list)
+        self.oper = pd.DataFrame(columns=columns_list)
+
+        self.food = pd.concat([self.food, df.loc[df['sub_code'].str.startswith("1")]], sort=False)
+        self.sale = pd.concat([self.sale, df.loc[df['sub_code'].str.startswith("2")]], sort=False)
+        self.cult = pd.concat([self.cult, df.loc[df['sub_code'].str.startswith("3")]], sort=False)
+        self.serv = pd.concat([self.serv, df.loc[df['sub_code'].str.startswith("4")]], sort=False)
+        self.desk = pd.concat([self.desk, df.loc[df['sub_code'].str.startswith("6")]], sort=False)
+        self.rsch = pd.concat([self.rsch, df.loc[df['sub_code'].str.startswith("7")]], sort=False)
+        self.buil = pd.concat([self.buil, df.loc[df['sub_code'].str.startswith("8")]], sort=False)
+        self.comp = pd.concat([self.comp, df.loc[df['sub_code'].str.startswith("9")]], sort=False)
+        self.edct = pd.concat([self.edct, df.loc[df['sub_code'].str.startswith("A")]], sort=False)
+        self.desg = pd.concat([self.desg, df.loc[df['sub_code'].str.startswith("B")]], sort=False)
+        self.medi = pd.concat([self.medi, df.loc[df['sub_code'].str.startswith("C")]], sort=False)
+        self.deli = pd.concat([self.deli, df.loc[df['sub_code'].str.startswith("D")]], sort=False)
+        self.oper = pd.concat([self.oper, df.loc[df['sub_code'].str.startswith("E")]], sort=False)
+
 
 if __name__ == "__main__":
-    start = time.time()
-    crawl = multy_scrap.MultyScrap()
-    # crawl = scrap.Scrap()
-
-    if crawl == False:
-        print("[Error] 코드 에러")
-        exit()
-    day = datetime.today().strftime("%Y-%m-%d")
-    crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
-    end = time.time() - start
-    print(">>> Scrap time : ", end)
-    
-    # mon = crawl_mon()
-    # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
-    # # mon.divide_mbti(crawl.df)
-    
-    
-    # db = db.DB()
-    # db.create_table()
-    # db.create_log_table()
-    
-    # db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
-    #                 mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)
-    
-    # db.insert_total_data(crawl.df)
-
-
     # start = time.time()
+    # crawl = multy_scrap.MultyScrap()
+    # # crawl = scrap.Scrap()
+    #
+    # if crawl == False:
+    #     print("[Error] 코드 에러")
+    #     exit()
     # day = datetime.today().strftime("%Y-%m-%d")
+    # crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
     # end = time.time() - start
+    # print(">>> Scrap time : ", end)
 
-    # mon = crawl_mon()
-    # mon.divide_mbti(pd.read_csv("../log/2021-07-30.csv"))
-    # # mon.divide_mbti(crawl.df)
 
+
+    start = time.time()
+    day = datetime.today().strftime("%Y-%m-%d")
+    end = time.time() - start
+
+    mon = crawl_mon()
+    mon.divide_mbti(pd.read_csv("../log/2021-08-24.csv"))
+    # mon.divide_mbti(crawl.df)
+
+    db = db.DB()
+    db.create_table()
+    db.create_log_table()
+
+    db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
+                    mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)
+
+    db.insert_total_data(crawl.df)
+
+
+    # job_version
+
+    # mon.divide_jobver(pd.read_csv("../log/2021-08-24.csv"))
+    #
     # db = db.DB()
-    # db.create_table()
-    # db.create_log_table()
-
-    # db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
-    #                 mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)
+    # db.create_table_jobver()
+    # db.create_log_table_jobver()
+    #
+    # db.insert_table_jobver(mon.food, mon.sale, mon.cult, mon.serv, mon.desk, mon.rsch, mon.buil,
+    #                        mon.comp, mon.edct, mon.desg, mon.medi, mon.deli, mon.oper, end, day)
+    #
+    # db.insert_total_data(crawl.df)
