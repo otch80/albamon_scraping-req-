@@ -57,7 +57,7 @@ class MultyScrap:
     def scrap(self, task_list):
         day = datetime.today().strftime("%Y-%m-%d")
         result_df = pd.DataFrame(
-            columns=['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code','enrol_date']
+            columns=['city', 'county', 'company', 'pay', 'pay_type', 'url', 'subtitle', 'sub_code','enrol_date']
         )
 
         result_list = []
@@ -155,13 +155,13 @@ class MultyScrap:
                             r_pay = re.findall("[0-9]", temp_pay)
                             pay = int(''.join(r_pay))
                         except:
-                            pay = ""
+                            pay = "0"
 
                         # pay_type.
                         try:
                             pay_type = tr.find(name="td", attrs={"pay"}).find("img").get("alt")
                         except:
-                            pay_type = ""
+                            pay_type = "0"
 
                         # gender.
                         try:
@@ -188,10 +188,7 @@ class MultyScrap:
                         except:
                             subtitle = ""
 
-                        result_list.append(
-                            [city, county, company, subtitle, url, gender, age, pay_type, pay, sub_title_code,day])
-        result_df = pd.DataFrame(result_list,
-                                 columns=['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url',
-                                          'subtitle', 'sub_code', 'enrol_date'])
+                        result_list.append([city, county, company, pay, pay_type, url, subtitle, subtitle, day])
+        result_df = pd.DataFrame(result_list,columns=['city', 'county', 'company', 'pay', 'pay_type', 'url', 'subtitle', 'sub_code','enrol_date'])
         result_df = result_df.dropna(axis=0)
         return result_df
