@@ -6,9 +6,9 @@ from sqlalchemy.dialects import mysql
 import pandas as pd
 
 user_info = {
-    "username" : "root",
-    "password" : "!whals7628rb1", # 입력
-    "database" : "capstone", # 입력
+    "username" : "",
+    "password" : "", # 입력
+    "database" : "", # 입력
 }
 
 class DB:
