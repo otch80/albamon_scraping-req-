@@ -22,9 +22,8 @@ class crawl_mon:
         return url
 
     def divide_mbti(self, df):
-        # print("df : ",df.shape)
         df.sub_code = df.sub_code.astype(str)
-        mbti_df = pd.read_csv("../MBTI list.csv")
+        mbti_df = pd.read_csv("./MBTI list.csv")
         columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'url', 'subtitle', 'sub_code','enrol_date']
 
         self.ISTJ = pd.DataFrame(columns=columns_list)
@@ -118,28 +117,27 @@ class crawl_mon:
 
 
 if __name__ == "__main__":
-    # start = time.time()
-    # crawl = multy_scrap.MultyScrap()
-    # # crawl = scrap.Scrap()
-    #
-    # if crawl == False:
-    #     print("[Error] 코드 에러")
-    #     exit()
-    # day = datetime.today().strftime("%Y-%m-%d")
-    # crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
-    # end = time.time() - start
-    # print(">>> Scrap time : ", end)
-
-
-
     start = time.time()
+    crawl = multy_scrap.MultyScrap()
+    # crawl = scrap.Scrap()
+    
+    if crawl == False:
+        print("[Error] 코드 에러")
+        exit()
     day = datetime.today().strftime("%Y-%m-%d")
+    crawl.df.to_csv("./log/" + day + ".csv", index=False, encoding="utf-8-sig")
     end = time.time() - start
+    print(">>> Scrap time : ", end)
 
-    temp_df = pd.read_csv("../log/2021-08-12.csv")
+    # start = time.time()
+    # day = datetime.today().strftime("%Y-%m-%d")
+    # end = time.time() - start
+
+    # df = pd.read_csv("./log/2021-08-28.csv")
     mon = crawl_mon()
-    mon.divide_mbti(temp_df)
-    # mon.divide_mbti(crawl.df)
+    mon.divide_mbti(crawl.df)
+    # mon.divide_mbti(df)
+    
 
     db = db.DB()
     db.create_mbti_table() 
@@ -151,7 +149,8 @@ if __name__ == "__main__":
     # job   
     db.create_job_table()
     db.create_joblog_table()
-    mon.divide_job(temp_df)
+    mon.divide_job(crawl.df)
+    # mon.divide_job(df)
     
     db.insert_job_table(mon.food, mon.sale, mon.cult, mon.serv, mon.desk, mon.rsch, mon.buil,
                            mon.comp, mon.edct, mon.desg, mon.medi, mon.deli, mon.oper, end, day)
