@@ -17,15 +17,14 @@ class crawl_mon:
 
     def make_url(self, code, rWDate=4, ps=50, page=1):
         url = "https://www.albamon.com/list/gi/mon_part_list.asp?"
+
         url += "rpcd=" + str(code) + "&rWDate=" + str(rWDate) + "&ps=" + str(ps) + "&page=" + str(page)
         return url
 
     def divide_mbti(self, df):
-        # print("df : ",df.shape)
         df.sub_code = df.sub_code.astype(str)
-        mbti_df = pd.read_csv("../MBTI list.csv")
-        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code',
-                     'star', 'enrol_date']
+        mbti_df = pd.read_csv("./MBTI list.csv")
+        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'url', 'subtitle', 'sub_code','enrol_date']
 
         self.ISTJ = pd.DataFrame(columns=columns_list)
         self.ISFJ = pd.DataFrame(columns=columns_list)
@@ -85,10 +84,9 @@ class crawl_mon:
                 if (mbti == "ENTJ"):
                     self.ENTJ = pd.concat([self.ENTJ, df.loc[df['sub_code'] == key]], sort=False)
 
-    def divide_jobver(self, df):
-        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'gender', 'age', 'url', 'subtitle', 'sub_code',
-                        'star', 'enrol_date']
-
+    def divide_job(self, df):
+        columns_list = ['city', 'county', 'company', 'pay', 'pay_type', 'url', 'subtitle', 'sub_code','enrol_date']
+        
         self.food = pd.DataFrame(columns=columns_list)
         self.sale = pd.DataFrame(columns=columns_list)
         self.cult = pd.DataFrame(columns=columns_list)
@@ -119,47 +117,42 @@ class crawl_mon:
 
 
 if __name__ == "__main__":
-    # start = time.time()
-    # crawl = multy_scrap.MultyScrap()
-    # # crawl = scrap.Scrap()
-    #
-    # if crawl == False:
-    #     print("[Error] 코드 에러")
-    #     exit()
-    # day = datetime.today().strftime("%Y-%m-%d")
-    # crawl.df.to_csv("../log/" + day + ".csv", index=False, encoding="utf-8-sig")
-    # end = time.time() - start
-    # print(">>> Scrap time : ", end)
-
-
-
     start = time.time()
+    crawl = multy_scrap.MultyScrap()
+    # crawl = scrap.Scrap()
+    
+    if crawl == False:
+        print("[Error] 코드 에러")
+        exit()
     day = datetime.today().strftime("%Y-%m-%d")
+    crawl.df.to_csv("./log/" + day + ".csv", index=False, encoding="utf-8-sig")
     end = time.time() - start
+    print(">>> Scrap time : ", end)
 
+    # start = time.time()
+    # day = datetime.today().strftime("%Y-%m-%d")
+    # end = time.time() - start
+
+    # df = pd.read_csv("./log/2021-08-28.csv")
     mon = crawl_mon()
-    mon.divide_mbti(pd.read_csv("../log/2021-08-24.csv"))
-    # mon.divide_mbti(crawl.df)
+    mon.divide_mbti(crawl.df)
+    # mon.divide_mbti(df)
+    
 
     db = db.DB()
-    db.create_table()
+    db.create_mbti_table() 
     db.create_log_table()
 
-    db.insert_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
+    db.insert_mbti_table(mon.ISTJ, mon.ISFJ, mon.INFJ, mon.INTJ, mon.ISTP, mon.ISFP, mon.INFP, mon.INTP, mon.ESTP, mon.ESFP,
                     mon.ENFP, mon.ENTP, mon.ESTJ, mon.ESFJ, mon.ENFJ, mon.ENTJ, end, day)
 
-    db.insert_total_data(crawl.df)
-
-
-    # job_version
-
-    # mon.divide_jobver(pd.read_csv("../log/2021-08-24.csv"))
-    #
-    # db = db.DB()
-    # db.create_table_jobver()
-    # db.create_log_table_jobver()
-    #
-    # db.insert_table_jobver(mon.food, mon.sale, mon.cult, mon.serv, mon.desk, mon.rsch, mon.buil,
-    #                        mon.comp, mon.edct, mon.desg, mon.medi, mon.deli, mon.oper, end, day)
-    #
+    # job   
+    db.create_job_table()
+    db.create_joblog_table()
+    mon.divide_job(crawl.df)
+    # mon.divide_job(df)
+    
+    db.insert_job_table(mon.food, mon.sale, mon.cult, mon.serv, mon.desk, mon.rsch, mon.buil,
+                           mon.comp, mon.edct, mon.desg, mon.medi, mon.deli, mon.oper, end, day)
+    
     # db.insert_total_data(crawl.df)
