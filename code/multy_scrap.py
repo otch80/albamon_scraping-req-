@@ -75,6 +75,10 @@ class MultyScrap:
             # 하위 카테고리
             for sub_title, sub_title_code in title_code.items():
 
+                # 랜덤 시간을 통한 req (매크로 방지용)
+                randomTime = random.randrange(5, 10)  # 5 ~ 10초 간격으로 req
+                time.sleep(randomTime)
+
                 # 총 게시물 수를 통한 전체 페이지 갯수 확인
                 url = self.crawl_mon.make_url(sub_title_code, page=1)
                 parsed = parse.urlparse(url)  # 공고 url 생성용

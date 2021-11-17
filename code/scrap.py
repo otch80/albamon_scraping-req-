@@ -6,12 +6,14 @@ from datetime import datetime
 from job_code import job_code
 from tqdm import tqdm
 
-import os, time, re, random, main
+import time, re, random, main
 import pandas as pd
 import ctypes
 
 class Scrap:
-    def __init__(self):
+    def __init__(self, rw):
+        self.rwdate = rw
+
         self.job_code = job_code
         print(">>> job code 로드 완료")
 
@@ -47,7 +49,7 @@ class Scrap:
             for sub_title, sub_title_code in title_code.items():
 
                 # 총 게시물 수를 통한 전체 페이지 갯수 확인
-                url = self.crawl_mon.make_url(sub_title_code, page=1)
+                url = self.crawl_mon.make_url(sub_title_code, rWDate=self.rwdate, page=1)
                 parsed = parse.urlparse(url)  # 공고 url 생성용
                 page = urlopen(url)
                 bs = BeautifulSoup(page, features="html.parser")
@@ -111,20 +113,20 @@ class Scrap:
 
                             county = area.split(" ")[1]
                         except:
-                            city = ''
-                            county = ''
+                            city = ' '
+                            county = ' '
 
                         # company.
                         try:
                             company = tr.find(name="td", attrs="subject").find_all(name="p", attrs={"cName"})[0].text
                         except:
-                            company = ""
+                            company = " "
 
                         # subtitle.
                         try:
                             subtitle = tr.find(name="td", attrs="subject").find_all(name="p", attrs={"cTit"})[0].text
                         except:
-                            subtitle = ""
+                            subtitle = " "
 
                         # pay.
                         try:
@@ -157,11 +159,14 @@ class Scrap:
                             url = tr.find("a").get("href")
                             url = parsed.scheme + "://" + parsed.netloc + url
                         except:
-                            url = ""
-
+                            url = " "
 
 
                         result_list.append([city, county, company, subtitle, pay, pay_type, url, sub_title_code, day])
+
+                print(">>>", sub_title, "(", sub_title_code, ") 완료")
+
+
         result_df = pd.DataFrame(result_list,columns=['city', 'county', 'company', 'subtitle', 'pay', 'pay_type', 'url', 'sub_code','enrol_date'])
         result_df = result_df.dropna(axis=0)
         return result_df
